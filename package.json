@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "doc": "doc"
   },
@@ -10,7 +11,11 @@
     "dev": "nodemon",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prisma:generate": "prisma generate",
+    "prisma:create": "prisma migrate dev --create-only",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "tsx src/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -31,8 +36,9 @@
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.6.2",
+    "prisma": "^7.0.1",
     "ts-jest": "^29.4.5",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0"
   },
@@ -40,6 +46,8 @@
     "eslint": "^9.39.1"
   },
   "dependencies": {
+    "@prisma/adapter-mariadb": "^7.0.1",
+    "@prisma/client": "^7.0.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

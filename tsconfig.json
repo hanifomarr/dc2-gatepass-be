@@ -1,11 +1,17 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
+    "target": "ES2023",                 
+    "module": "ESNext",                  
+    "moduleResolution": "node",          
+    "strict": true,                       
+    "esModuleInterop": true, 
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./src",                   
     "forceConsistentCasingInFileNames": true
+    
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*"],  
   "exclude": ["node_modules", "dist"],
   "ts-node": {
     "files": true
