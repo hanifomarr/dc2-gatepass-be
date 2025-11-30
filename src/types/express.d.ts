@@ -8,6 +8,7 @@ declare global {
         payload: JwtPayload;
         token: string;
       };
+      validated?: any;
     }
   }
 }
