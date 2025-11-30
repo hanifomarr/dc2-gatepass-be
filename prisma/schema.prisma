@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -21,6 +15,89 @@ model User {
   role      Role     @default(RESIDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Resident Resident[]
+
+  entryLogs EntryLog[]
+  guard     Guard?
+}
+
+model Resident {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  name       String
+  unitNumber String
+  phone      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicles Vehicle[]
+  visitors Visitor[]
+  passes   Pass[]
+}
+
+model Vehicle {
+  id           String      @id @default(uuid())
+  residentId   String
+  licensePlate String
+  type         VehicleType
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  resident Resident @relation(fields: [residentId], references: [id])
+}
+
+model Visitor {
+  id            String      @id @default(uuid())
+  residentId    String // The resident who registers this visitor
+  name          String
+  phone         String
+  type          VisitorType // Parent, Friend, Delivery, etc.
+  purpose       String
+  address       String?
+  vehicleNumber String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  resident Resident @relation(fields: [residentId], references: [id])
+  passes   Pass[]
+}
+
+model Guard {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  shift      String? // e.g. "Morning", "Night"
+  employeeId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Pass {
+  id         String     @id @default(uuid())
+  visitorId  String
+  residentId String
+  code       String     @unique // The string encoded in QR
+  validFrom  DateTime
+  validTo    DateTime
+  status     PassStatus @default(ACTIVE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  logs       EntryLog[]
+
+  visitor  Visitor  @relation(fields: [visitorId], references: [id])
+  resident Resident @relation(fields: [residentId], references: [id])
+}
+
+model EntryLog {
+  id        String      @id @default(uuid())
+  passId    String
+  pass      Pass        @relation(fields: [passId], references: [id])
+  guardId   String
+  guard     User        @relation(fields: [guardId], references: [id])
+  action    EntryAction
+  timestamp DateTime    @default(now())
 }
 
 enum Role {
@@ -28,4 +105,30 @@ enum Role {
   RESIDENT
   GUARD
   PARENT
+}
+
+enum VisitorType {
+  GUEST
+  DELIVERY
+  CONTRACTOR
+  PARENT
+  OTHER
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
+  OTHER
+}
+
+enum PassStatus {
+  ACTIVE
+  USED
+  EXPIRED
+  CANCELLED
+}
+
+enum EntryAction {
+  CHECK_IN
+  CHECK_OUT
 }

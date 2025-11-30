@@ -1,0 +1,14 @@
+-- CreateTable
+CREATE TABLE `Visitor` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `vehicleNumber` VARCHAR(191) NOT NULL,
+    `type` ENUM('GUEST', 'DELIVERY', 'CONTRACTOR', 'PARENT', 'OTHER') NOT NULL DEFAULT 'GUEST',
+    `phone` VARCHAR(191) NOT NULL,
+    `address` VARCHAR(191) NOT NULL,
+    `purpose` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
