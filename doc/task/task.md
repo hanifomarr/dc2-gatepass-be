@@ -1,0 +1,34 @@
+# Tasks
+
+- [ ] Create PRD for Gatepass Backend <!-- id: 0 -->
+    - [x] Create `doc` directory <!-- id: 1 -->
+    - [x] Draft `doc/main-idea.md` <!-- id: 2 -->
+- [x] Create Roadmap Plan <!-- id: 3 -->
+    - [x] Draft `doc/roadmap.md` <!-- id: 4 -->
+- [ ] Project Skeleton Setup <!-- id: 5 -->
+    - [x] Create `implementation_plan.md` <!-- id: 6 -->
+    - [x] Initialize Node.js project <!-- id: 7 -->
+    - [x] Install dependencies <!-- id: 8 -->
+    - [x] Configure TypeScript & Tooling <!-- id: 9 -->
+    - [x] Create directory structure <!-- id: 10 -->
+    - [x] Implement basic server <!-- id: 11 -->
+- [ ] Phase 1: Foundation & Authentication <!-- id: 12 -->
+    - [x] Create `implementation_plan_phase1.md` <!-- id: 13 -->
+    - [x] Database Setup (MySQL + Prisma) <!-- id: 14 -->
+    - [x] Authentication Module (Register, Login, JWT) <!-- id: 15 -->
+- [ ] Phase 2: Core Resident & Visitor Flow <!-- id: 16 -->
+    - [x] Create `implementation_plan_phase2.md` <!-- id: 17 -->
+    - [x] Database Schema Updates (Unit, Visitor, Pass) <!-- id: 18 -->
+    - [x] QR Code Generation Service <!-- id: 19 -->
+    - [x] Resident Module (Invite, History) <!-- id: 20 -->
+- [ ] Phase 3: Guard Operations & Entry Management <!-- id: 21 -->
+    - [x] Create `implementation_plan_phase3.md` <!-- id: 22 -->
+    - [x] Database Schema Updates (EntryLog) <!-- id: 23 -->
+    - [x] Guard Module (Scan, Check-in/out) <!-- id: 24 -->
+- [ ] Phase 4: School Parent Integration <!-- id: 25 -->
+    - [x] Create `implementation_plan_phase4.md` <!-- id: 26 -->
+    - [x] Database Schema Updates (Student) <!-- id: 27 -->
+    - [x] Parent Module (Student Linking, Recurring Pass) <!-- id: 28 -->
+- [ ] Phase 5: Admin Dashboard & Reporting <!-- id: 29 -->
+    - [x] Create `implementation_plan_phase5.md` <!-- id: 30 -->
+    - [x] Admin Module (User Management, Logs, Stats) <!-- id: 31 -->

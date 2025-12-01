@@ -1,338 +1,105 @@
-# **📘 Product Requirements Document (PRD)**
+# Product Requirements Document (PRD): Gatepass Backend System
 
-## **DC2 GatePass Web Application**
+## 1. Introduction
 
----
+### 1.1 Problem Statement
 
-# **1. Overview**
+The current guard house system relies on manual processes for tracking residents and visitors. This is inefficient, prone to errors, and lacks real-time visibility. Additionally, the community includes a school, requiring a specific flow for parents dropping off/picking up children, which adds complexity to the standard visitor management.
 
-### **1.1 Product Summary**
+### 1.2 Goals
 
-DC2 GatePass is a digital visitor management system for a guarded residential community with an internal school. The system digitizes the check-in/check-out process for visitors (especially parents dropping off/picking up children), reduces long queues, enhances security, and provides real-time visitor tracking for guards and management.
+- **Digitalize** the entry/exit process for residents, visitors, and school parents.
+- **Enhance Security** by verifying identities via QR codes and maintaining digital logs.
+- **Streamline Operations** for guards and administrators.
+- **Improve User Experience** for residents and parents through a dedicated mobile/web interface.
 
-### **1.2 Target Users**
+## 2. User Personas
 
-- **Parents/Visitors (External)**
-  Coming to send/pick their children at the school inside the community.
-- **Residents**
-  Living in the community and inviting personal guests.
-- **Security Guards**
-  Managing entry/exit approvals at the guard house.
-- **Community Admin / Management**
-  System oversight, managing schools, houses, users, and analytics.
-- **School Staff**
-  Verifying student pick-ups and issuing school pickup QR passes.
+1.  **Resident**: Lives in the community. Needs to invite guests and manage their own access.
+2.  **Visitor**: Enters the community for a specific purpose (delivery, social visit, contractor).
+3.  **Guard**: Manages the entry/exit points. Verifies QR codes and identities.
+4.  **Parent**: Non-resident who enters specifically to drop off/pick up school children.
+5.  **Admin**: Manages the entire system, users, reports, and security settings.
 
----
+## 3. Functional Requirements
 
-# **2. Goals & Objectives**
+### 3.1 Resident Module
 
-### **2.1 Primary Goals**
+- **Login/Authentication**: Secure login via email/phone.
+- **Register Visitor**:
+  - Input visitor details (Name, Vehicle Number, Purpose, Date/Time).
+  - Generate a unique QR code for the visitor.
+  - Share QR code via WhatsApp/Email.
+- **View History**: See a log of past visitors.
+- **Emergency Alert**: Trigger a panic button to notify guards/admin.
 
-- Reduce long queues at the guardhouse.
-- Digitize and automate visitor registration.
-- Improve child safety during school drop-off/pick-up.
-- Provide seamless real-time verification for guards.
-- Track all visitor movement in the community.
+### 3.2 Visitor Module (Web Link/App)
 
-### **2.2 Business Objectives**
+- **Receive Pass**: View the QR code shared by the resident.
+- **Pre-registration**: (Enhancement) Fill in details via a link before arrival to speed up entry.
 
-- Increase community security.
-- Reduce manual guard workload.
-- Maintain proper visitor logs for compliance.
-- Provide a scalable system for future automation (ANPR, boom gate auto-open, RFID, etc.)
+### 3.3 Parent Module (School Access)
 
----
+- **Registration**: One-time registration verified by the school/admin.
+- **Permanent/Recurring QR**: Get a static or recurring QR code for school hours (e.g., Mon-Fri, 7 AM - 5 PM).
+- **Child Association**: Link QR code to specific student details.
 
-# **3. Core Features**
+### 3.4 Guard Module (Mobile/Tablet App)
 
----
+- **Scan QR**: Scan visitor/parent QR codes for validation.
+  - _Valid_: Show details, allow check-in.
+  - _Invalid/Expired_: Deny entry.
+- **Manual Entry**: Register visitors who don't have a QR code (walk-ins) by capturing ID photo and details.
+- **Check-in/Check-out**: Record entry and exit times.
+- **Overstay Alert**: (Enhancement) View list of visitors still inside past their expected exit time.
 
-## **3.1 Visitor Pass Generation**
+### 3.5 Admin Dashboard (Web)
 
-### **A. Resident-Initiated Visitor Pass**
+- **Dashboard Overview**: Real-time stats (Total Visitors, Current Visitors, School Parents Inside).
+- **User Management**: Manage residents, guards, and parents.
+- **Reports**: Generate PDF/Excel reports on visitor traffic, security incidents.
+- **Broadcast**: (Enhancement) Send announcements to all residents (e.g., "Main gate maintenance").
+- **Blacklist**: (Enhancement) Block specific vehicle numbers or IDs from generating passes.
 
-Residents can:
+## 4. Non-Functional Requirements
 
-- Create visitor entry requests.
-- Fill in visitor info:
+- **Performance**: QR scan response time < 1 second.
+- **Scalability**: Support high concurrency during school drop-off/pick-up hours.
+- **Security**:
+  - Data encryption in transit (HTTPS) and at rest.
+  - Role-Based Access Control (RBAC).
+  - GDPR/PDPA compliance for personal data handling.
+- **Availability**: 99.9% uptime.
 
-  - Name, phone, IC/passport
-  - Vehicle plate number
-  - Purpose of visit
+## 5. Technology Stack
 
-- Select validity time & date.
-- System generates:
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: MySQL (Relational data is better for structured logs and relationships) OR MongoDB (Flexible schema for varying visitor types). _Recommendation: MySQL for strict relational integrity between Residents, Units, and Visitors._
+- **ORM**: Prisma or TypeORM (if MySQL), Mongoose (if MongoDB).
+- **Authentication**: JWT (JSON Web Tokens).
 
-  - **QR Pass**
-  - **Pass Code (Alpha-numeric fallback)**
+## 6. Proposed Database Schema (High-Level Entities)
 
----
+- **Users**: `id`, `name`, `email`, `password_hash`, `role` (ADMIN, RESIDENT, GUARD, PARENT), `phone`.
+- **Units/Houses**: `id`, `unit_number`, `resident_id` (FK).
+- **Visitors**: `id`, `name`, `vehicle_number`, `type` (GUEST, DELIVERY, PARENT).
+- **Passes**: `id`, `visitor_id` (FK), `resident_id` (FK, nullable for parents), `qr_code_string`, `valid_from`, `valid_to`, `status` (ACTIVE, USED, EXPIRED).
+- **Logs**: `id`, `pass_id` (FK), `guard_id` (FK), `action` (CHECK_IN, CHECK_OUT), `timestamp`.
 
-### **B. School Parent Visitor Pass**
+## 7. API Endpoints (Core)
 
-Parent (visitor) registers:
+- `POST /auth/login`
+- `POST /auth/register`
+- `POST /passes/generate` (Resident generates pass)
+- `GET /passes/:id` (View pass details)
+- `POST /gate/scan` (Guard scans QR)
+- `POST /gate/checkout` (Guard checks out visitor)
+- `GET /admin/stats`
 
-- Student name
-- Parent name
-- Phone
-- Vehicle plate
-- Number of passengers
-- Pickup/drop-off purpose
-- Time slot (optional)
-
-System generates:
-
-- One-time QR Code
-- Valid for that day only
-- Auto-expire after time window
-
----
-
-## **3.2 Guard Checkpoint Module (Guard App)**
-
-Accessible through tablet or PC in guardhouse.
-
-Guards can:
-
-- Scan QR code (camera/webcam)
-- Search manually by:
-
-  - Phone number
-  - Name
-  - Plate number
-
-- Approve/Reject entry
-- View visitor details instantly
-- View “school pickup mode” list for upcoming parents
-
-Real-time features:
-
-- Show pending visitors arriving soon
-- Display vehicle plate (manual input)
-- Log check-in timestamp
-- Log check-out timestamp
-
----
-
-## **3.3 Admin & Management Dashboard**
-
-Admin dashboard includes:
-
-- User/Resident management
-- School/student lists
-- Visitor logs with filters:
-
-  - Date range
-  - Type (Resident guest / School parent / Contractor)
-  - Plate number
-
-- Analytics:
-
-  - Peak hours
-  - Number of daily visitors
-
-- Security reporting (PDF export)
-
----
-
-## **3.4 Authentication & Access Control**
-
-- Residents login with phone + OTP
-- Guards login with secure pin/password
-- Admin login with username/password
-- JWT tokens for session
-- Role-based access:
-
-  - admin
-  - guard
-  - resident
-  - parent(temporary guest profile)
-
----
-
-## **3.5 QR Code System**
-
-QR code contains encoded:
-
-- Pass ID
-- Visitor type
-- Validity window
-- Plate number (optional)
-
-Features:
-
-- One-time use OR multiple-use (configurable)
-- Auto-expire by:
-
-  - Time range
-  - Once scanned
-
-- Retry with manual code if QR unreadable
-
----
-
-## **3.6 Real-Time Queue Monitoring**
-
-To reduce congestion at school time:
-
-- Display upcoming parents in queue for guards
-- Parents see “estimated waiting time”
-- Guard can fast-scan during peak hours
-- Admin can activate “school pickup mode”:
-
-  - Fast scanning
-  - No manual data entry
-
-(Optional v2 feature)
-
----
-
-## **3.7 Notifications**
-
-Residents receive:
-
-- Visitor arrived notifications
-- Visitor left notifications
-
-School parents receive:
-
-- QR pass link
-- Entry approved notification
-- “Your child has been picked-up” (if integrated with school staff app later)
-
----
-
-# **4. Technical Requirements**
-
----
-
-## **4.1 Backend (Node.js + Express)**
-
-### **Tech Stack**
-
-- Node.js (Express)
-- PostgreSQL
-- Prisma
-- JWT Authentication
-- Redis (optional for caching)
-- Cloud storage (S3/GCP) for logs & images
-
-### **Backend Services**
-
-- Authentication & authorization
-- Visitor pass generation
-- QR code encoding/decoding
-- Guard scanning endpoint
-- Visitor logs & analytics
-- Admin management module
-- Rate limiting & throttling
-
-### **Performance Requirements**
-
-- Handle peak load of parents during school hours
-- <300ms response time for scanning endpoints
-- Scalable horizontally with load balancer
-
----
-
-## **4.2 Frontend (Angular)**
-
-### **Modules**
-
-- Resident Portal
-- Parent Visitor Portal
-- Guard App
-- Admin Dashboard
-
-### **Components**
-
-- QR code generator
-- QR scanner component
-- Visitor form
-- Kids registration (school)
-- Visitor logs table
-- Analytics charts
-- Login forms
-
-### **Performance**
-
-- Optimized lazy-loaded modules
-- Offline fallback for guardhouse
-
----
-
-# **5. User Flows**
-
----
-
-### **5.1 School Parent Flow**
-
-1. Parent receives link/QR from school to register once.
-2. Parent registers and receives daily pass QR.
-3. On arrival, guard scans QR.
-4. System marks “Parent entered”.
-5. Optional: School staff confirms pickup inside school.
-6. Parent exits → system marks “Exited.”
-
----
-
-### **5.2 Visitor Flow (Resident Guest)**
-
-1. Resident registers visitor.
-2. Sends QR to visitor via WhatsApp.
-3. Visitor arrives → guard scans → approved.
-4. Visitor exits → guard scans again or auto-logs.
-
----
-
-### **5.3 Guard Flow**
-
-1. Login in guard tablet.
-2. Scan visitor QR.
-3. Approve or reject.
-4. Check logs.
-5. During peak school time:
-
-   - Use fast-scan mode
-   - Auto-approve parents
-
----
-
-# **6. Non-Functional Requirements**
-
-### **Security**
-
-- HTTPS everywhere
-- Rate limiting against brute force
-- JWT + Refresh tokens
-- Data encryption for PII
-
-### **Reliability**
-
-- 99.9% uptime
-- Backup DB daily
-- Scalable deployment
-
-### **Usability**
-
-- Minimal clicks for guards
-- Mobile-friendly for parents
-- Offline mode for guardhouse
-
-### **Compliance**
-
-- Follow PDPA Malaysia
-- Secure handling of children’s data
-
----
-
-# **8. MVP Scope**
-
-- Parent pass registration
-- Resident guest pass
-- Guard scanning (QR + manual)
-- Basic guard dashboard
-- Admin dashboard (logs)
-- Auth (Resident, Guard, Admin)
-- Visitor logs
+## 8. Future Enhancements
+
+- **License Plate Recognition (LPR)**: Integrate camera AI to auto-open gates for registered vehicles.
+- **Billing Integration**: Charge for overnight parking or facility usage.
+- **Kiosk Mode**: Self-service kiosk for visitors to register at the gate.
