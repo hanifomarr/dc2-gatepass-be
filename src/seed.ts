@@ -49,8 +49,13 @@ async function main() {
       Resident: {
         create: {
           name: "Resident User",
-          unitNumber: "A-01-01",
           phone: "+60123456789",
+          house: {
+            create: {
+              unitNo: "A-01-01",
+              street: "123 Main St",
+            },
+          },
         },
       },
     },
