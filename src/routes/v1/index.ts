@@ -1,7 +1,7 @@
 import { Router } from "express";
 import visitors from "./visitors";
 import auth from "./auth";
-import residents from "./residents";
+import residents from "../../modules/residents";
 import houses from "../../modules/houses";
 
 const v1 = Router();
