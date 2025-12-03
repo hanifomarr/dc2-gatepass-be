@@ -46,4 +46,28 @@ export class VisitorService {
       },
     });
   }
+
+  // Check-in visitor
+  async checkIn(id: string) {
+    return prisma.visitor.update({
+      where: {
+        id,
+      },
+      data: {
+        status: "CHECKED_IN",
+      },
+    });
+  }
+
+  // Check-out visitor
+  async checkOut(id: string) {
+    return prisma.visitor.update({
+      where: {
+        id,
+      },
+      data: {
+        status: "CHECKED_OUT",
+      },
+    });
+  }
 }

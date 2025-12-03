@@ -24,4 +24,18 @@ export class VisitorController {
     const visitor = await visitorService.get(req.params.id);
     res.status(200).json(visitor);
   }
+
+  // Check-in visitor
+  // POST /visitors/:id/checkin
+  async checkInVisitor(req: Request, res: Response) {
+    const visitor = await visitorService.checkIn(req.params.id);
+    res.status(200).json(visitor);
+  }
+
+  // Check-out visitor
+  // POST /visitors/:id/checkout
+  async checkOutVisitor(req: Request, res: Response) {
+    const visitor = await visitorService.checkOut(req.params.id);
+    res.status(200).json(visitor);
+  }
 }
