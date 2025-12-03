@@ -59,16 +59,17 @@ model Vehicle {
 }
 
 model Visitor {
-  id            String      @id @default(uuid())
+  id            String        @id @default(uuid())
   residentId    String // The resident who registers this visitor
   name          String
   phone         String
+  status        VisitorStatus @default(PENDING)
   type          VisitorType // Parent, Friend, Delivery, etc.
   purpose       String
   address       String?
   vehicleNumber String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   resident Resident @relation(fields: [residentId], references: [id])
   passes   Pass[]
@@ -115,6 +116,14 @@ enum Role {
   RESIDENT
   GUARD
   PARENT
+}
+
+enum VisitorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHECKED_IN
+  CHECKED_OUT
 }
 
 enum VisitorType {
