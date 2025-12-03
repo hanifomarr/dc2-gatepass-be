@@ -1,8 +1,6 @@
 import { Router } from "express";
-import visitors from "./visitors";
 import auth from "./auth";
-import residents from "../../modules/residents";
-import houses from "../../modules/houses";
+import { residents, houses, visitors } from "../../modules";
 
 const v1 = Router();
 
